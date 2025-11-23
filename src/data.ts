@@ -1,0 +1,96 @@
+export const PRODUCTS = [
+    {
+        id: '1',
+        brand: 'APPLE',
+        name: 'iPhone 13 128GB, 4GB RAM, cámara principal 12MP, frontal 12MP, 6.1", Negro',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/195383-500-auto?v=637726828965630000&width=500&height=auto&aspect=true',
+        originalPrice: 4399,
+        price: 1999,
+        discount: 55,
+        installments: { count: 9, amount: 222.11 },
+        description: 'El iPhone 13 es el nuevo smartphone de Apple con un sistema de dos cámaras avanzado, un chip A15 Bionic superrápido y un gran salto en duración de batería.',
+        specs: ['Pantalla Super Retina XDR de 6.1"', 'Chip A15 Bionic', 'Sistema de dos cámaras de 12 MP', 'Cámara frontal TrueDepth de 12 MP']
+    },
+    {
+        id: '2',
+        brand: 'SAMSUNG',
+        name: 'Celular Samsung Galaxy A06 4G 64GB, 4GB RAM, cámara principal 50MP, Negro',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/327936-500-auto?v=638634636574500000&width=500&height=auto&aspect=true',
+        originalPrice: 499,
+        price: 279,
+        discount: 44,
+        installments: { count: 9, amount: 71.00 },
+        description: 'El Samsung Galaxy A06 ofrece una pantalla grande, una cámara increíble y una batería que dura todo el día.',
+        specs: ['Pantalla de 6.5"', 'Cámara principal de 50MP', 'Batería de 5000mAh', 'Procesador Octa-core']
+    },
+    {
+        id: '3',
+        brand: 'STARLINK',
+        name: 'Kit de internet Satelital SpaceX Starlink Mini de alta velocidad, Dual Band WiFi',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/324438-500-auto?v=638610444567700000&width=500&height=auto&aspect=true',
+        originalPrice: 749,
+        price: 639,
+        discount: 15,
+        installments: { count: 9, amount: 71.00 },
+        description: 'Internet de alta velocidad y baja latencia en lugares remotos y rurales de todo el mundo.',
+        specs: ['WiFi Dual Band', 'Fácil instalación', 'Resistente a la intemperie', 'Alta velocidad']
+    },
+    {
+        id: '4',
+        brand: 'APPLE',
+        name: 'iPhone 17 eSIM 5G 256GB, 6.3", cámara principal 48MP, frontal 12MP, Titanio del desierto',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/329762-500-auto?v=638649177361470000&width=500&height=auto&aspect=true',
+        originalPrice: 4555,
+        price: 3999,
+        discount: 12,
+        installments: { count: 9, amount: 388.77 },
+        description: 'El iPhone 17 redefine la experiencia móvil con su diseño de titanio y el chip más potente jamás creado para un smartphone.',
+        specs: ['Pantalla Super Retina XDR de 6.3"', 'Chip A18 Pro', 'Cámara de 48MP', 'Diseño de titanio']
+    },
+    {
+        id: '5',
+        brand: 'ASUS',
+        name: 'Consola portátil Asus ROG Xbox Ally X 2025 con AMD Ryzen Z1 Extreme, 24GB RAM',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/321638-500-auto?v=638583537578900000&width=500&height=auto&aspect=true',
+        originalPrice: 3799.90,
+        price: 3499,
+        discount: 8,
+        installments: { count: 9, amount: 388.77 },
+        description: 'Juega a tus juegos favoritos de PC en cualquier lugar con la consola portátil más potente del mercado.',
+        specs: ['Procesador AMD Ryzen Z1 Extreme', 'Pantalla de 7" 120Hz', '24GB RAM LPDDR5X', 'Windows 11 Home']
+    },
+    {
+        id: '6',
+        brand: 'LENOVO',
+        name: 'Laptop Lenovo Intel Core i5 12450H 16GB RAM 512GB SSD 15.6" FHD, Gris',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/316865-500-auto?v=638554161578700000&width=500&height=auto&aspect=true',
+        originalPrice: 2339,
+        price: 1616,
+        discount: 31,
+        description: 'Potencia y portabilidad se unen en esta laptop Lenovo, ideal para trabajo y entretenimiento.',
+        specs: ['Procesador Intel Core i5 12450H', '16GB RAM', '512GB SSD', 'Pantalla 15.6" FHD']
+    },
+    {
+        id: '7',
+        brand: 'APPLE',
+        name: 'iPad 11" Wi-Fi, 128GB, cámara principal 12MP, frontal 12MP, Plata',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/258829-500-auto?v=638029996578900000&width=500&height=auto&aspect=true',
+        originalPrice: 1999,
+        price: 1499,
+        discount: 25,
+        installments: { count: 9, amount: 166.55 },
+        description: 'El iPad es versátil, potente y fácil de usar. Diseñado para hacer todo lo que te gusta.',
+        specs: ['Pantalla Liquid Retina de 11"', 'Chip M2', 'Cámaras Pro', 'Compatible con Apple Pencil']
+    },
+    {
+        id: '8',
+        brand: 'APPLE',
+        name: 'MacBook Pro M4 Pro 14", 512GB SSD, 24 GB RAM, Negro espacial',
+        image: 'https://coolboxpe.vtexassets.com/arquivos/ids/331648-500-auto?v=638666457578900000&width=500&height=auto&aspect=true',
+        originalPrice: 12839,
+        price: 7949,
+        discount: 38,
+        description: 'La MacBook Pro más avanzada de la historia, con los chips M4 Pro y M4 Max.',
+        specs: ['Chip M4 Pro', 'Pantalla Liquid Retina XDR', 'Hasta 22 horas de batería', 'Cámara de 1080p']
+    },
+];
