@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ProductCard } from '../components/ProductCard';
+import { Loader } from '../components/Loader';
 import { ChevronRight } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import api from '../api/axios';
@@ -11,7 +12,7 @@ export const HomePage = () => {
     const [error, setError] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get('q')?.toLowerCase() || '';
-    const categoryQuery = searchParams.get('category')?.toUpperCase() || '';
+    const categoryName = searchParams.get('category')?.toLowerCase() || '';
     const sucursalId = 3;
 
     useEffect(() => {
@@ -35,21 +36,25 @@ export const HomePage = () => {
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.nombreProducto.toLowerCase().includes(searchQuery) ||
             product.marcaProducto.toLowerCase().includes(searchQuery);
-        const matchesCategory = categoryQuery ? product.marcaProducto === categoryQuery : true; // Assuming category filter uses brand for now as per previous logic
+        const matchesCategory = categoryName ? product.categoriaNombre.toLowerCase() === categoryName : true;
 
         return matchesSearch && matchesCategory;
     });
 
     const getTitle = () => {
         if (searchQuery) return `Resultados para "${searchQuery}"`;
-        if (categoryQuery) return `Productos ${categoryQuery}`;
+        if (categoryName) {
+            const category = products.find(p => p.categoriaNombre.toLowerCase() === categoryName);
+            const categoryDisplayName = category ? category.categoriaNombre : categoryName.charAt(0).toUpperCase() + categoryName.slice(1);
+            return `${categoryDisplayName}: ${filteredProducts.length} ${filteredProducts.length === 1 ? 'producto' : 'productos'}`;
+        }
         return '¡Lo mejor de Coolbox!';
     };
 
     if (loading) {
         return (
             <div className="bg-secondary min-h-screen flex items-center justify-center">
-                <div className="text-xl text-gray-600">Cargando productos...</div>
+                <Loader />
             </div>
         );
     }
@@ -65,12 +70,11 @@ export const HomePage = () => {
     return (
         <div className="bg-secondary min-h-screen pb-12 animate-fade-in">
             <div className="container mx-auto px-4 py-6">
-                {/* Banner / Title Section */}
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-gray-800">
                         {getTitle()}
                     </h1>
-                    {!searchQuery && !categoryQuery && (
+                    {!searchQuery && !categoryName && (
                         <div className="flex gap-2">
                             <button className="p-2 rounded-full bg-white shadow hover:bg-gray-50 transition-colors">
                                 <ChevronRight className="rotate-180" size={20} />
@@ -82,7 +86,6 @@ export const HomePage = () => {
                     )}
                 </div>
 
-                {/* Product Grid */}
                 {filteredProducts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {filteredProducts.map((product) => (

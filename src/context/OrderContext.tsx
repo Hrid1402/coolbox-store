@@ -37,7 +37,7 @@ export const OrderProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             direccionEntrega: address,
             metodoPago: paymentMethod === 'card' ? 'TARJETA' : 'TRANSFERENCIA',
             idSucursal: 3,
-            idCupon: 1,
+            idCupon: null,
             observaciones: observations || "Ninguna",
             items: items.map(item => ({
                 idProducto: parseInt(item.id),

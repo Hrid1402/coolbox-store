@@ -2,7 +2,15 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Search, ShoppingCart, User, Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import api from '../api/axios';
+
+interface Category {
+    idCategoria: number;
+    nombreCategoria: string;
+    descripcion: string;
+    activo: boolean;
+}
 
 export const Header = () => {
     const { user, logout } = useAuth();
@@ -10,6 +18,33 @@ export const Header = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+    const [isCategoriesOpen, setIsCategoriesOpen] = useState(false);
+    const [categories, setCategories] = useState<Category[]>([]);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await api.get('/categorias');
+                setCategories(response.data.filter((cat: Category) => cat.activo));
+            } catch (err) {
+                console.error('Failed to fetch categories', err);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsCategoriesOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,36 +65,40 @@ export const Header = () => {
                     </Link>
 
                     {/* Categories Button */}
-                    <div className="relative group">
-                        <button className="hidden md:flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors">
+                    <div className="relative" ref={dropdownRef}>
+                        <button
+                            onClick={() => setIsCategoriesOpen(!isCategoriesOpen)}
+                            className="hidden md:flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-md font-medium hover:bg-red-700 transition-colors"
+                        >
                             <Menu size={20} />
                             Categorías
                         </button>
 
                         {/* Dropdown Menu */}
-                        <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-2 hidden group-hover:block border border-gray-100 animate-fade-in z-50">
-                            <div className="px-4 py-2 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Marcas
+                        {isCategoriesOpen && (
+                            <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-md shadow-lg py-2 border border-gray-100 animate-fade-in z-50">
+                                <div className="px-4 py-2 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    Categorías
+                                </div>
+                                <Link
+                                    to="/"
+                                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
+                                    onClick={() => setIsCategoriesOpen(false)}
+                                >
+                                    Ver Todo
+                                </Link>
+                                {categories.map((category) => (
+                                    <Link
+                                        key={category.idCategoria}
+                                        to={`/?category=${encodeURIComponent(category.nombreCategoria.toLowerCase())}`}
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
+                                        onClick={() => setIsCategoriesOpen(false)}
+                                    >
+                                        {category.nombreCategoria}
+                                    </Link>
+                                ))}
                             </div>
-                            <Link to="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Ver Todo
-                            </Link>
-                            <Link to="/?category=APPLE" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Apple
-                            </Link>
-                            <Link to="/?category=SAMSUNG" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Samsung
-                            </Link>
-                            <Link to="/?category=LENOVO" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Lenovo
-                            </Link>
-                            <Link to="/?category=ASUS" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Asus
-                            </Link>
-                            <Link to="/?category=STARLINK" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors">
-                                Starlink
-                            </Link>
-                        </div>
+                        )}
                     </div>
 
                     {/* Search Bar */}

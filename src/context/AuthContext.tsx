@@ -36,11 +36,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const token = Cookies.get('token');
-        if (storedUser && token) {
-            setUser(JSON.parse(storedUser));
-        }
+        const validateToken = async () => {
+            const storedUser = localStorage.getItem('user');
+            const token = Cookies.get('token');
+
+            if (storedUser && token) {
+                try {
+                    // Validate token by making a lightweight API call
+                    // Using the products endpoint as a validation check
+                    await api.get('/productos/sucursal/3');
+                    // If successful, token is valid
+                    setUser(JSON.parse(storedUser));
+                } catch (err) {
+                    // Token is invalid or expired, clear everything
+                    console.log('Token validation failed, logging out');
+                    localStorage.removeItem('user');
+                    Cookies.remove('token');
+                    setUser(null);
+                }
+            }
+        };
+
+        validateToken();
+    }, []);
+
+    // Listen for unauthorized events from axios interceptor
+    useEffect(() => {
+        const handleUnauthorized = () => {
+            setUser(null);
+        };
+
+        window.addEventListener('unauthorized', handleUnauthorized);
+        return () => window.removeEventListener('unauthorized', handleUnauthorized);
     }, []);
 
     const login = async (email: string, password: string) => {
@@ -86,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 direccion,
                 tipoDocumento,
                 numeroDocumento,
-                idCiudad: 1 // Default value as requested
+                idCiudad: 1
             });
             const { usuario, token } = response.data;
 

@@ -27,6 +27,12 @@ api.interceptors.response.use(
         if (error.response && error.response.status === 401) {
             Cookies.remove('token');
             localStorage.removeItem('user');
+            // Dispatch a custom event to notify the app of logout
+            window.dispatchEvent(new Event('unauthorized'));
+            // Optional: redirect to login page if not already there
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
         }
         return Promise.reject(error);
     }

@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import { ShoppingCart, ChevronLeft } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { Loader } from '../components/Loader';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import { type Product } from '../data';
@@ -35,8 +36,8 @@ export const ProductDetailPage = () => {
 
     if (loading) {
         return (
-            <div className="container mx-auto px-4 py-12 text-center">
-                <p className="text-xl text-gray-600">Cargando producto...</p>
+            <div className="container mx-auto px-4 py-12 min-h-screen flex items-center justify-center">
+                <Loader />
             </div>
         );
     }
@@ -50,10 +51,9 @@ export const ProductDetailPage = () => {
         );
     }
 
-    // Calculate prices
-    // Find price for the specific branch from inventory
+
     const inventoryItem = product.inventario?.find(item => item.idSucursal === sucursalId);
-    // Use inventory price if available, otherwise fallback to product price, or 0
+
     const basePrice = inventoryItem?.precioProducto ?? product.precio ?? 0;
 
     const originalPrice = basePrice;
@@ -71,12 +71,15 @@ export const ProductDetailPage = () => {
 
             <div className="bg-white rounded-lg shadow-sm p-6 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                    {/* Image Section */}
-                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8">
+                    <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8 w-full h-96 md:h-[500px]">
                         <img
                             src={product.urlImagenProducto}
                             alt={product.nombreProducto}
-                            className="max-w-full max-h-[400px] object-contain"
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"%3E%3Crect fill="%23f3f4f6" width="200" height="200"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="14" fill="%239ca3af"%3ESin imagen%3C/text%3E%3C/svg%3E';
+                            }}
                         />
                     </div>
 
