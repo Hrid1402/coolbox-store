@@ -1,20 +1,66 @@
-
 import { useParams, Link } from 'react-router-dom';
-import { PRODUCTS } from '../data';
 import { ShoppingCart, ChevronLeft } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useEffect, useState } from 'react';
+import api from '../api/axios';
+import { type Product } from '../data';
 
 export const ProductDetailPage = () => {
     const { id } = useParams();
-    const product = PRODUCTS.find(p => p.id === id);
+    const { addToCart } = useCart();
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const sucursalId = 3;
 
-    if (!product) {
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get(`/productos/${id}`);
+                console.log(response.data);
+                setProduct(response.data);
+            } catch (err) {
+                console.error("Failed to fetch product", err);
+                setError("No se pudo cargar el producto.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchProduct();
+        }
+    }, [id]);
+
+    if (loading) {
         return (
             <div className="container mx-auto px-4 py-12 text-center">
-                <h2 className="text-2xl font-bold mb-4">Producto no encontrado</h2>
+                <p className="text-xl text-gray-600">Cargando producto...</p>
+            </div>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <div className="container mx-auto px-4 py-12 text-center">
+                <h2 className="text-2xl font-bold mb-4">{error || "Producto no encontrado"}</h2>
                 <Link to="/" className="text-primary hover:underline">Volver al inicio</Link>
             </div>
         );
     }
+
+    // Calculate prices
+    // Find price for the specific branch from inventory
+    const inventoryItem = product.inventario?.find(item => item.idSucursal === sucursalId);
+    // Use inventory price if available, otherwise fallback to product price, or 0
+    const basePrice = inventoryItem?.precioProducto ?? product.precio ?? 0;
+
+    const originalPrice = basePrice;
+    const hasDiscount = product.porcentajeDescuento !== null && product.porcentajeDescuento > 0;
+    const finalPrice = hasDiscount
+        ? basePrice - (basePrice * ((product.porcentajeDescuento || 0) / 100))
+        : basePrice;
 
     return (
         <div className="container mx-auto px-4 py-8">
@@ -28,59 +74,46 @@ export const ProductDetailPage = () => {
                     {/* Image Section */}
                     <div className="flex items-center justify-center bg-gray-50 rounded-lg p-8">
                         <img
-                            src={product.image}
-                            alt={product.name}
+                            src={product.urlImagenProducto}
+                            alt={product.nombreProducto}
                             className="max-w-full max-h-[400px] object-contain"
                         />
                     </div>
 
                     {/* Info Section */}
                     <div>
-                        <div className="text-sm text-gray-500 font-bold uppercase mb-2">{product.brand}</div>
+                        <div className="text-sm text-gray-500 font-bold uppercase mb-2">{product.marcaProducto}</div>
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                            {product.name}
+                            {product.nombreProducto}
                         </h1>
 
                         <div className="border-t border-b border-gray-100 py-4 mb-6">
-                            {product.originalPrice && (
+                            {hasDiscount && (
                                 <div className="text-gray-400 line-through mb-1">
-                                    S/ {product.originalPrice.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                    S/ {originalPrice.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
                                 </div>
                             )}
                             <div className="flex items-center gap-3">
                                 <span className="text-3xl font-bold text-primary">
-                                    S/ {product.price.toLocaleString('es-PE', { minimumFractionDigits: 0 })}
+                                    S/ {finalPrice.toLocaleString('es-PE', { minimumFractionDigits: 0 })}
                                 </span>
-                                {product.discount && (
+                                {hasDiscount && (
                                     <span className="text-sm font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
-                                        {product.discount}% DSCTO
+                                        -{product.porcentajeDescuento}% DSCTO
                                     </span>
                                 )}
                             </div>
-                            {product.installments && (
-                                <div className="text-sm text-green-600 font-medium mt-2">
-                                    ¡Llévatelo en {product.installments.count} cuotas de S/ {product.installments.amount.toFixed(2)}!
-                                </div>
-                            )}
                         </div>
 
                         <div className="space-y-6">
                             <p className="text-gray-600 leading-relaxed">
-                                {product.description}
+                                {product.especificacionesProducto}
                             </p>
 
-                            {product.specs && (
-                                <div>
-                                    <h3 className="font-bold text-gray-900 mb-2">Características principales:</h3>
-                                    <ul className="list-disc list-inside text-gray-600 space-y-1">
-                                        {product.specs.map((spec, index) => (
-                                            <li key={index}>{spec}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
-
-                            <button className="w-full md:w-auto bg-primary text-white px-8 py-3 rounded-md font-bold text-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2">
+                            <button
+                                onClick={() => addToCart(product)}
+                                className="w-full md:w-auto bg-primary text-white px-8 py-3 rounded-md font-bold text-lg hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
+                            >
                                 <ShoppingCart size={24} />
                                 Agregar al carrito
                             </button>
