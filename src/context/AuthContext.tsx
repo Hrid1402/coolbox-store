@@ -13,7 +13,15 @@ interface User {
 interface AuthContextType {
     user: User | null;
     login: (email: string, password: string) => Promise<void>;
-    register: (name: string, email: string, password: string) => Promise<void>;
+    register: (
+        nombreCompleto: string,
+        email: string,
+        password: string,
+        telefono: string,
+        direccion: string,
+        tipoDocumento: string,
+        numeroDocumento: string
+    ) => Promise<void>;
     logout: () => void;
     isAuthenticated: boolean;
     loading: boolean;
@@ -58,16 +66,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const register = async (name: string, email: string, password: string) => {
+    const register = async (
+        nombreCompleto: string,
+        email: string,
+        password: string,
+        telefono: string,
+        direccion: string,
+        tipoDocumento: string,
+        numeroDocumento: string
+    ) => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.post('/auth/register', { name, email, password });
-            const { user, token } = response.data;
+            const response = await api.post('/clientes/register', {
+                nombreCompleto,
+                email,
+                password,
+                telefono,
+                direccion,
+                tipoDocumento,
+                numeroDocumento,
+                idCiudad: 1 // Default value as requested
+            });
+            const { usuario, token } = response.data;
 
             Cookies.set('token', token, { expires: 7 });
-            localStorage.setItem('user', JSON.stringify(user));
-            setUser(user);
+            localStorage.setItem('user', JSON.stringify(usuario));
+            setUser(usuario);
         } catch (err: any) {
             setError(err.response?.data?.message || 'Registration failed');
             throw err;

@@ -9,11 +9,15 @@ export const RegisterPage = () => {
         name: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        telefono: '',
+        direccion: '',
+        tipoDocumento: 'DNI',
+        numeroDocumento: ''
     });
     const [localError, setLocalError] = useState('');
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -36,7 +40,15 @@ export const RegisterPage = () => {
         }
 
         try {
-            await register(formData.name, formData.email, formData.password);
+            await register(
+                formData.name,
+                formData.email,
+                formData.password,
+                formData.telefono,
+                formData.direccion,
+                formData.tipoDocumento,
+                formData.numeroDocumento
+            );
             navigate('/');
         } catch (err) {
             console.error("Registration failed", err);
@@ -57,15 +69,15 @@ export const RegisterPage = () => {
                         </Link>
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
                     {(localError || authError) && (
                         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded relative" role="alert">
                             <span className="block sm:inline">{localError || authError}</span>
                         </div>
                     )}
-                    <div className="rounded-md shadow-sm -space-y-px">
+                    <div className="space-y-3">
                         <div>
-                            <label htmlFor="name" className="sr-only">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                                 Nombre completo
                             </label>
                             <input
@@ -76,12 +88,12 @@ export const RegisterPage = () => {
                                 required
                                 value={formData.name}
                                 onChange={handleChange}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Nombre completo"
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="Juan Pérez"
                             />
                         </div>
                         <div>
-                            <label htmlFor="email-address" className="sr-only">
+                            <label htmlFor="email-address" className="block text-sm font-medium text-gray-700 mb-1">
                                 Correo electrónico
                             </label>
                             <input
@@ -92,12 +104,78 @@ export const RegisterPage = () => {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Correo electrónico"
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="correo@ejemplo.com"
                             />
                         </div>
                         <div>
-                            <label htmlFor="password" className="sr-only">
+                            <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
+                                Teléfono
+                            </label>
+                            <input
+                                id="telefono"
+                                name="telefono"
+                                type="tel"
+                                autoComplete="tel"
+                                required
+                                value={formData.telefono}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="999888777"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-1">
+                                Dirección
+                            </label>
+                            <input
+                                id="direccion"
+                                name="direccion"
+                                type="text"
+                                autoComplete="street-address"
+                                required
+                                value={formData.direccion}
+                                onChange={handleChange}
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="Av. Principal 123, Lima"
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label htmlFor="tipoDocumento" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Tipo de Documento
+                                </label>
+                                <select
+                                    id="tipoDocumento"
+                                    name="tipoDocumento"
+                                    required
+                                    value={formData.tipoDocumento}
+                                    onChange={handleChange}
+                                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                >
+                                    <option value="DNI">DNI</option>
+                                    <option value="CE">CE</option>
+                                    <option value="PASAPORTE">Pasaporte</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="numeroDocumento" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Número
+                                </label>
+                                <input
+                                    id="numeroDocumento"
+                                    name="numeroDocumento"
+                                    type="text"
+                                    required
+                                    value={formData.numeroDocumento}
+                                    onChange={handleChange}
+                                    className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                    placeholder="12345678"
+                                />
+                            </div>
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                                 Contraseña
                             </label>
                             <input
@@ -108,12 +186,12 @@ export const RegisterPage = () => {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Contraseña"
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="Mínimo 6 caracteres"
                             />
                         </div>
                         <div>
-                            <label htmlFor="confirm-password" className="sr-only">
+                            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-1">
                                 Confirmar Contraseña
                             </label>
                             <input
@@ -124,8 +202,8 @@ export const RegisterPage = () => {
                                 required
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm"
-                                placeholder="Confirmar Contraseña"
+                                className="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
+                                placeholder="Confirma tu contraseña"
                             />
                         </div>
                     </div>
