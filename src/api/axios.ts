@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-    baseURL: 'https://proyectofinal-a6au.onrender.com/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://proyectofinal-a6au.onrender.com/api',
     headers: {
         'Content-Type': 'application/json',
     },
